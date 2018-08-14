@@ -18,9 +18,11 @@ terminus -n auth:login --machine-token="$TERMINUS_TOKEN"
 git remote add pantheon ssh://codeserver.dev.853a0c69-1521-4bb0-8af2-94ed5f6f208e@codeserver.dev.853a0c69-1521-4bb0-8af2-94ed5f6f208e.drush.in:2222/~/repository.git
 
 # Pull 
+git checkout $CIRCLE_BRANCH
 git pull pantheon $CIRCLE_BRANCH
 
 # Push code to Pantheon
+git push origin $CIRCLE_BRANCH
 git push pantheon $CIRCLE_BRANCH
 
 # Run updatedb on the dev environment
