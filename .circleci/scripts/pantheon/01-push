@@ -22,7 +22,6 @@ git checkout $CIRCLE_BRANCH
 git pull pantheon $CIRCLE_BRANCH
 
 # Push code to Pantheon
-git push origin $CIRCLE_BRANCH
 git push pantheon $CIRCLE_BRANCH
 
 # Run updatedb on the dev environment
