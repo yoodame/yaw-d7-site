@@ -11,15 +11,14 @@ if [[ $CIRCLE_BRANCH != "master" ]] ; then
 fi
 
 # Merge the multidev for the PR into the dev environment
-# terminus -n build:env:merge "$TERMINUS_SITE.$TERMINUS_ENV" --yes
-terminus env:commit $TERMINUS_SITE.dev --message="Tesing a commit to dev"
+terminus -n build:env:merge "$TERMINUS_SITE.$TERMINUS_ENV" --yes
 
 # Run updatedb on the dev environment
-# terminus -n drush $TERMINUS_SITE.dev -- updatedb --yes
-# terminus -n drush $TERMINUS_SITE.dev -- cc all --yes
+terminus -n drush $TERMINUS_SITE.dev -- updatedb --yes
+terminus -n drush $TERMINUS_SITE.dev -- cc all --yes
 
 # TODO: If there are any exported configuration files, then import them
 
 # Delete old multidev environments associated with a PR that has been
 # merged or closed.
-# terminus -n build:env:delete:pr "$TERMINUS_SITE" --yes
+terminus -n build:env:delete:pr "$TERMINUS_SITE" --yes
