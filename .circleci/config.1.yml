@@ -86,36 +86,49 @@ jobs:
         steps:
             - checkout
 
+            - restore_cache:
+                keys:
+                    - composer-cache
+                    - terminus-install
+
             - run:
                 # Set TERMINUS_ENV and related environment variables.
                 # https://github.com/pantheon-systems/docker-build-tools-ci/blob/1.x/scripts/set-environment
                 name: dependencies
                 command: /build-tools-ci/scripts/set-environment
 
-            # - run:
-                # name: create site-under test (push code) and prepare database (clone existing or install new)
-                # command: ./.circleci/scripts/pantheon/02-init-site-under-test-clone-existing
-                # command: ./.circleci/scripts/pantheon/02-init-site-under-test-reinstall-new
-
-            # - run:
-            #     name: run composer install again to get dev dependencies
-            #     command: composer install
-
-            # - run:
-            #     name: run functional tests with Behat
-            #     command: ./tests/scripts/run-behat
-
-            # - run:
-            #     name: post-test actions
-            #     command: ./.circleci/scripts/pantheon/03-post-test
+            - run:
+                name: install dev dependencies, build assets, etc.
+                command: ./.circleci/scripts/pantheon/01-prepare
 
             - run:
-                name: handle merge to master
+                name: build assets
+                command: composer -n build-assets
+
+            - run:
+                name: create site-under test (push code) and prepare database (clone existing or install new)
+                command: ./.circleci/scripts/pantheon/02-init-site-under-test-clone-existing
+                # command: ./.circleci/scripts/pantheon/02-init-site-under-test-reinstall-new
+
+            - run:
+                name: run composer install again to get dev dependencies
+                command: composer install
+
+            - run:
+                name: run functional tests with Behat
+                command: ./tests/scripts/run-behat
+
+            - run:
+                name: post-test actions
+                command: ./.circleci/scripts/pantheon/03-post-test
+
+            - run:
+                name: handle merge to master (if needed)
                 command: ./.circleci/scripts/pantheon/04-merge-master
 
-            # - run:
-            #     name: remove transient test fixtures
-            #     command: ./.circleci/scripts/pantheon/09-cleanup-fixtures
+            - run:
+                name: remove transient test fixtures
+                command: ./.circleci/scripts/pantheon/09-cleanup-fixtures
 
     # TODO:
     # 04-merge-master
@@ -125,5 +138,7 @@ workflows:
   version: 2
   build_and_test:
     jobs:
+      # Install dev dependencies and do simple tests (sniff, unit tests, etc.)
+      - build
       # Build deploy and test on target platform
       - build_deploy_and_test
